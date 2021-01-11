@@ -2,6 +2,7 @@ from midiutil import MIDIFile
 import play_midi
 
 degrees  = [60, 62, 64, 65, 67, 69, 71, 72]  # MIDI note number
+#durations = [4, 4, 4, 4, 4, 4, 4, 4]
 track    = 0
 channel  = 0
 time     = 0    # In beats
