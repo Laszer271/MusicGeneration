@@ -87,7 +87,7 @@ def interval_mutation(gen_vec, probs='uniform'):
 def note_position_mutation(gen_vec):
     #instead of note prolongation mutation
     '''
-    change the rhythm values of two notes or rests (pauses) by moving 
+    change the rhythm values of two notes or rests (rests) by moving 
     a rest or note in the vector (1 position to the left or 1 position to the right)
     '''
     notes_mask = gen_vec != -2
@@ -174,7 +174,7 @@ def long_to_short_ratio_mutation(gen_vec):
     
 if __name__ == '__main__':
 
-    for i in range(1000000):
+    for i in range(10000):
         gen_representation = utils.generate_music_vector(np.random.randint(4, 100))
         repr_mutated = single_note_transposition(gen_representation.copy())
         if (gen_representation < 0).all():
@@ -182,18 +182,18 @@ if __name__ == '__main__':
         else:
             assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 1) # changed on 1 position
             assert(((gen_representation == -2) == (repr_mutated == -2)).all()) # pronongations haven't changed
-            assert(((gen_representation == -1) == (repr_mutated == -1)).all()) # pauses haven't changed
+            assert(((gen_representation == -1) == (repr_mutated == -1)).all()) # rests haven't changed
             
         repr_mutated = interval_mutation(gen_representation.copy())
         assert((gen_representation == repr_mutated).sum() >= len(gen_representation) - 1) # changed on 1 position or haven't changed
         assert(((gen_representation == -2) == (repr_mutated == -2)).all()) # pronongations haven't changed
-        assert(((gen_representation == -1) == (repr_mutated == -1)).all()) # pauses haven't changed
+        assert(((gen_representation == -1) == (repr_mutated == -1)).all()) # rests haven't changed
         
         repr_mutated = note_position_mutation(gen_representation.copy())
         assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 2 or
                (gen_representation == repr_mutated).sum() == len(gen_representation)) # changed on 2 positions or haven't changed
         assert((gen_representation == -2).sum() == (repr_mutated == -2).sum()) # number of pronongations haven't changed
-        assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of pauses haven't changed
+        assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of rests haven't changed
         assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum()) # number of notes haven't changed
         
         repr_mutated = rest_to_note_mutation(gen_representation.copy())
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         else:
             assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 1) # changed on 1 position
             assert((gen_representation == -2).sum() == (repr_mutated == -2).sum()) # number of pronongations haven't changed
-            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum() + 1) # number of pauses have decreased by 1
+            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum() + 1) # number of rests have decreased by 1
             assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum() - 1) # number of notes have increased by 1
         
         repr_mutated = note_to_rest_mutation(gen_representation.copy())
@@ -211,7 +211,7 @@ if __name__ == '__main__':
         else:
             assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 1) # changed on 1 position
             assert((gen_representation == -2).sum() == (repr_mutated == -2).sum()) # number of pronongations haven't changed
-            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum() - 1) # number of pauses have increased by 1
+            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum() - 1) # number of rests have increased by 1
             assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum() + 1) # number of notes have decreased by 1
         
         repr_mutated = note_to_prolongation_mutation(gen_representation.copy())
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         else:
             assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 1) # changed on 1 position
             assert((gen_representation == -2).sum() == (repr_mutated == -2).sum() - 1) # number of pronongations have increased by 1
-            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of pauses haven't changed 1
+            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of rests haven't changed 1
             assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum() + 1) # number of notes have decreased by 1
         
         repr_mutated = prolongation_to_note_mutation(gen_representation.copy())
@@ -231,7 +231,7 @@ if __name__ == '__main__':
         else:
             assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 1) # changed on 1 position
             assert((gen_representation == -2).sum() == (repr_mutated == -2).sum() + 1) # number of pronongations have increased by 1
-            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of pauses haven't changed
+            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of rests haven't changed
             assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum() - 1) # number of notes have increased by 1
 
         repr_mutated = long_to_short_ratio_mutation(gen_representation.copy())
