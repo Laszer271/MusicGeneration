@@ -1,5 +1,5 @@
 import numpy as np
-import constants
+import utils
 
 MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11]
 MINOR_INTERVALS = [0, 2, 3, 5, 7, 8, 10]
@@ -15,10 +15,10 @@ def minor_mode(note):
 # set of notes in key
 def generate_key(starting_note, mode):
     key = []
-    for octave in range(0, constants.FULL_OCTAVES_NO - 1):
-        key.extend( mode(starting_note + constants.OCTAVE_LENGTH * octave) )
-    unfull_octave = np.array( mode(starting_note + constants.OCTAVE_LENGTH * constants.FULL_OCTAVES_NO) )
-    key.extend(unfull_octave[unfull_octave <= constants.HIGHEST_PITCH])
+    for octave in range(0, utils.FULL_OCTAVES_NO - 1):
+        key.extend( mode(starting_note + utils.OCTAVE_LENGTH * octave) )
+    unfull_octave = np.array( mode(starting_note + utils.OCTAVE_LENGTH * utils.FULL_OCTAVES_NO) )
+    key.extend(unfull_octave[unfull_octave <= utils.HIGHEST_PITCH])
     return key
 
 # defined keys
