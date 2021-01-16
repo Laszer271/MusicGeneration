@@ -1,4 +1,5 @@
 import numpy as np
+import utils
 #from bisect import bisect_left, bisect_right
 
 '''
@@ -6,6 +7,9 @@ import numpy as np
 '''
 INTERVAL_POSSIBLE_CHANGES = [i for i in range(-12, 13)]
 def modify_note_within_interval(note, probs):
+    '''
+    Return the note changed randomly within the interval
+    '''
     if probs == 'uniform':
         change = np.random.choice(INTERVAL_POSSIBLE_CHANGES)
     else:
@@ -14,9 +18,11 @@ def modify_note_within_interval(note, probs):
 
 def single_note_transposition(gen_vec, probs='uniform'):
     '''
-    change the pitch of a selected note by a random interval within one octave
+    Change the pitch of a selected note by a random interval within one octave
     '''
     notes_mask = gen_vec >= 0
+    if notes_mask.sum() == 0:
+        return gen_vec
     note_to_change = np.random.choice(notes_mask.nonzero()[0])
     old_value = gen_vec[note_to_change]
     
@@ -28,7 +34,10 @@ def interval_mutation(gen_vec, probs='uniform'):
     change the interval between two consecutive notes to another within one octave
     '''
     notes_mask = gen_vec >= 0
-    pair_to_change = np.random.randint(0, notes_mask.sum() - 1)
+    n = notes_mask.sum() - 1
+    if n <= 0:
+        return gen_vec
+    pair_to_change = np.random.randint(0, n)
         
     val1 = gen_vec[notes_mask][pair_to_change]
     val2 = gen_vec[notes_mask][pair_to_change + 1]
@@ -46,7 +55,7 @@ def note_position_mutation(gen_vec):
     a rest or note in the vector (1 position to the left or 1 position to the right)
     '''
     notes_mask = gen_vec != -2
-    note_to_move = np.random.choice(gen_vec[notes_mask.nonzero()[0]])
+    note_to_move = np.random.choice(notes_mask.nonzero()[0])
     mode = np.random.choice([-1, 1])
     if note_to_move + mode != len(gen_vec) and note_to_move + mode != -1:
         note_val = gen_vec[note_to_move]
@@ -69,13 +78,17 @@ def rest_to_note_mutation(gen_vec, probs='uniform'):
     mode = np.random.randint(0, 2)
     #TODO: use bisect below of sth to have O(logn) and not O(n)
     if mode:
-        neigbour_candidates = neigbour_candidates[neigbour_candidates > rest_to_change] 
+        neighbours_mask = neigbour_candidates > rest_to_change
     else:
-        neigbour_candidates = neigbour_candidates[neigbour_candidates < rest_to_change]
+        neighbours_mask = neigbour_candidates < rest_to_change
+    if not neighbours_mask.any():
+        neighbours_mask = ~neighbours_mask & neigbour_candidates != rest_to_change
+    neigbour_candidates = neigbour_candidates[neighbours_mask] 
     if not len(neigbour_candidates):
-            return gen_vec
-    neighbour_note = min(neigbour_candidates, key=lambda x: abs(x-rest_to_change))
-    gen_vec[rest_to_change] = modify_note_within_interval(gen_vec[neighbour_note], probs)
+        gen_vec[rest_to_change] = np.random.randint(0, 128)
+    else:
+        neighbour_note = min(neigbour_candidates, key=lambda x: abs(x-rest_to_change))
+        gen_vec[rest_to_change] = modify_note_within_interval(gen_vec[neighbour_note], probs)
     return gen_vec
 
 def note_to_rest_mutation(gen_vec):
@@ -106,28 +119,37 @@ def prolongation_to_note_mutation(gen_vec):
     return gen_vec
     
 if __name__ == '__main__':
-    #gen_representation = np.array([60, -2, -2, -2, 62, -2, -2, -2])
-    gen_representation = np.array([60, -2, -2, -2, 62, -2, -2, -2, 11, 12, -2, -1, -2, -1, 13, 14])
-    
+
     for i in range(10000):
-        repr_mutated1 = single_note_transposition(gen_representation.copy())
-        assert((gen_representation == repr_mutated1).sum() >= len(gen_representation) - 1) # changed on 1 position or haven't changed
-        assert(np.abs((gen_representation - repr_mutated1)).sum() <= 12)
-        assert(((gen_representation == -2) == (repr_mutated1 == -2)).all())
+        gen_representation = utils.generate_music_vector(np.random.randint(4, 100))
+        repr_mutated = single_note_transposition(gen_representation.copy())
+        assert((gen_representation == repr_mutated).sum() >= len(gen_representation) - 1) # changed on 1 position or haven't changed
+        assert(((gen_representation == -2) == (repr_mutated == -2)).all()) # pronongations haven't changed
+        assert(((gen_representation == -1) == (repr_mutated == -1)).all()) # pauses haven't changed
         
-        repr_mutated2 = interval_mutation(gen_representation.copy())
-        assert((gen_representation == repr_mutated2).sum() >= len(gen_representation) - 1) # changed on 1 position or haven't changed
-        assert(((gen_representation == -2) == (repr_mutated2 == -2)).all())
+        repr_mutated = interval_mutation(gen_representation.copy())
+        assert((gen_representation == repr_mutated).sum() >= len(gen_representation) - 1) # changed on 1 position or haven't changed
+        assert(((gen_representation == -2) == (repr_mutated == -2)).all()) # pronongations haven't changed
+        assert(((gen_representation == -1) == (repr_mutated == -1)).all()) # pauses haven't changed
         
-        repr_mutated3 = note_prolongation_mutation(gen_representation.copy())
-        assert((gen_representation == repr_mutated3).sum() == len(gen_representation) - 2 or
-               (gen_representation == repr_mutated3).sum() == len(gen_representation)) # changed on 2 positions or haven't changed
-        assert((gen_representation == -2).sum() == (repr_mutated3 == -2).sum())
+        repr_mutated = note_position_mutation(gen_representation.copy())
+        assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 2 or
+               (gen_representation == repr_mutated).sum() == len(gen_representation)) # changed on 2 positions or haven't changed
+        assert((gen_representation == -2).sum() == (repr_mutated == -2).sum()) # number of pronongations haven't changed
+        assert((gen_representation == -1).sum() == (repr_mutated == -1).sum()) # number of pauses haven't changed
+        assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum()) # number of notes haven't changed
         
-        repr_mutated4 = rests_to_notes_ratio_mutation(gen_representation.copy())
-        assert((gen_representation == repr_mutated4).sum() == len(gen_representation) - 1) # changed on 1 position
-        assert(abs((gen_representation == -1).sum() - (repr_mutated4 == -1).sum()) == 1)
+        repr_mutated = rest_to_note_mutation(gen_representation.copy())
+        if not (gen_representation == -1).sum():
+            assert((repr_mutated == gen_representation).all()) # nothing have changed
+        else:
+            assert((gen_representation == repr_mutated).sum() == len(gen_representation) - 1) # changed on 1 position
+            assert((gen_representation == -2).sum() == (repr_mutated == -2).sum()) # number of pronongations haven't changed
+            assert((gen_representation == -1).sum() == (repr_mutated == -1).sum() + 1) # number of pauses have decreased by 1
+            assert((gen_representation >= 0).sum() == (repr_mutated >= 0).sum() - 1) # number of notes have increased by 1
+        '''
         
         repr_mutated5 = rythmic_mutation(gen_representation.copy())
         assert((gen_representation == repr_mutated5).sum() == len(gen_representation) - 1) # changed on 1 position
         assert(abs((gen_representation == -2).sum() - (repr_mutated5 == -2).sum()) == 1)
+        '''
