@@ -19,9 +19,9 @@ def play_music(music_file, freq=44100, bitsize=-16, channels=2, buffer=2048, vol
     clock = pg.time.Clock()
     try:
         pg.mixer.music.load(music_file)
-        print("Music file {} loaded!".format(music_file))
+        #print("Music file {} loaded!".format(music_file))
     except pg.error:
-        print("File {} not found! {}".format(music_file, pg.get_error()))
+        #print("File {} not found! {}".format(music_file, pg.get_error()))
         return
     
     try:
