@@ -34,12 +34,12 @@ def calculate_minor_and_major_seconds(gen_vec, _):
         return 0
     seconds_no = np.count_nonzero(np.isin(intervals, np.array([utils.MINOR_SECOND_INTERVAL, utils.MAJOR_SECOND_INTERVAL])))
     return seconds_no / np.count_nonzero(intervals)
-def calculate_intervals_larger_than_octave(gen_vec, _):
+def calculate_intervals_smaller_than_octave(gen_vec, _):
     intervals = utils.get_intervals(gen_vec)
     if np.count_nonzero(intervals) == 0:
         return 0
-    intervals_larger_than_octave_no = np.count_nonzero(intervals > utils.OCTAVE_LENGTH)
-    return intervals_larger_than_octave_no / np.count_nonzero(intervals)
+    intervals_smaller_than_octave_no = np.count_nonzero(intervals <= utils.OCTAVE_LENGTH)
+    return intervals_smaller_than_octave_no / np.count_nonzero(intervals)
 def calculate_mean_rhythmic_value(gen_vec, _):
     mean = np.average( np.log( np.array(rep.gen_to_midi(gen_vec)[1]) / 4 + 1 ) )
     whole_notes = np.log(5)
@@ -66,11 +66,11 @@ mean_pitch = (calculate_mean_pitch, 1, 0.564, 0.065)
 pitch_deviation = (calculate_pitch_deviation, 1, 0.053, 0.013)
 off_scale_notes = (calculate_off_scale_notes, 1, 0, 0.3)
 minor_and_major_seconds = (calculate_minor_and_major_seconds, 1, 0.553, 0.078)
-intervals_larger_than_octave = (calculate_intervals_larger_than_octave, 1, 0.007, 0.010)
+intervals_smaller_than_octave = (calculate_intervals_smaller_than_octave, 1, 0.007, 0.010)
 mean_rhythmic_value = (calculate_mean_rhythmic_value, 1, 0.282, 0.12)
 rhythm_deviation = (calculate_rhythm_deviation, 1, 0.156, 0.058)
 notes_in_strong_beat = (calculate_notes_in_strong_beat, 1, 0.788, 0.218)
 rests_to_notes_ratio = (calculate_rests_to_notes_ratio, 1, 0.105, 0.092)
 
-statistical_features = np.array([mean_pitch, pitch_deviation, off_scale_notes, minor_and_major_seconds, intervals_larger_than_octave,
+statistical_features = np.array([mean_pitch, pitch_deviation, off_scale_notes, minor_and_major_seconds, intervals_smaller_than_octave,
                                  mean_rhythmic_value, rhythm_deviation, notes_in_strong_beat, rests_to_notes_ratio])
