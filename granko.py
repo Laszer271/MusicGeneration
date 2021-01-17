@@ -7,7 +7,7 @@ def play_music(pitches, durations):
     track    = 0
     channel  = 0
     time     = 0    # In beats
-    tempo    = 120   # In BPM
+    tempo    = 200   # In BPM
     volume   = 100  # 0-127, as per the MIDI standard
     
     MyMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
@@ -19,7 +19,7 @@ def play_music(pitches, durations):
             MyMIDI.addNote(track, channel, pitch, time, duration, volume)
         time += duration
         
-    music_file = 'major-scale.mid'
+    music_file = 'generated_song.mid'
     with open(music_file, 'wb') as output_file:
         MyMIDI.writeFile(output_file)
     
@@ -28,8 +28,12 @@ def play_music(pitches, durations):
 if __name__ == '__main__':
     songs = np.load('generated_songs.npy')
     for i, song in enumerate(songs):
-        print('Music nr:', i)
         pitches, durations = representations.gen_to_midi(song)
+        print('Music nr:', i)
+        print('Notes:')
+        pitches = np.array(pitches)
+        pitches = pitches[pitches >= 0]
+        print(pitches)
         play_music(pitches, durations)
-        print('Press enter to continue:')
+        print('Press enter to continue:', end='')
         input()
