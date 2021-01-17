@@ -29,9 +29,10 @@ class Evolution():
         return [self.fitness_function(x, self.tonality) for x in population]
     
     def get_population(self, n_best=None, return_scores=False):
-        scores = self.score_all(self.population)
+        population = np.unique(self.population, axis=0)
+        scores = np.array(self.score_all(population))
         idx = scores.argsort()[::-1]
-        population = np.array(self.population)[idx]
+        population = np.array(population)[idx]
         if n_best is not None:
             population = population[:n_best]
             

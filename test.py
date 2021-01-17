@@ -6,6 +6,7 @@ from fitness_functions import statistical_fitness_function
 import mutations
 import utils
 import tonality
+import numpy as np
 
 mutations_functions = (mutations.single_note_transposition,
                        mutations.interval_mutation,
@@ -36,3 +37,7 @@ evolution_model = Evolution(mutations_functions,
 
 evolution_model.initialize_population(population_kwargs)
 evolution_model.start(n_epochs=1000)
+songs = evolution_model.get_population(n_best=10)
+songs = np.array(songs)
+
+np.save('generated_songs.npy', songs)
