@@ -17,14 +17,14 @@ LOWEST_PITCH = 0 # has to be C for proper key defining
 HIGHEST_PITCH = 127
 FULL_OCTAVES_NO = int(np.floor(HIGHEST_PITCH / OCTAVE_LENGTH))
 
-PROLONGATION_WEIGHT = 0.5
-PAUSE_WEIGHT = 0.05
-WEIGHTS = [(1.0-PROLONGATION_WEIGHT-PAUSE_WEIGHT)/128.0  for i in range(128)]
-WEIGHTS = [PROLONGATION_WEIGHT, PAUSE_WEIGHT] + WEIGHTS
+PROLONGATION_PROB = 0.5
+REST_PROB = 0.05
+PROBS = [(1.0-PROLONGATION_PROB-REST_PROB)/128.0  for i in range(128)]
+PROBS = [PROLONGATION_PROB, REST_PROB] + PROBS
 def generate_music_vector(n):
-    song = np.random.choice(POSSIBLE_VALUES, n, p=WEIGHTS)
+    song = np.random.choice(POSSIBLE_VALUES, n, p=PROBS)
     while song[0] == -2:
-        song[0] = np.random.choice(POSSIBLE_VALUES, p=WEIGHTS)
+        song[0] = np.random.choice(POSSIBLE_VALUES, p=PROBS)
     return song
 
 def get_intervals(gen_vec):
