@@ -4,7 +4,7 @@ def one_point_crossover(population, n_children=None):
     if n_children is None:
         n_children = len(population) // 2
     
-    length = len(population[0])
+    length = len(population)
     point_threshold_pos = length - 1
     children = []
     for i in range(n_children):
