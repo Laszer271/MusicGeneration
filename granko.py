@@ -33,7 +33,8 @@ if __name__ == '__main__':
         print('Notes:')
         pitches = np.array(pitches)
         pitches = pitches[pitches >= 0]
-        print(pitches)
+        pitches_notes = representations.midi_to_notes(pitches)
+        print(pitches_notes)
         play_music(pitches, durations)
         print('Press enter to continue:', end='')
         input()
