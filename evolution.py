@@ -44,8 +44,7 @@ class Evolution():
     def start(self, n_epochs, mutate_parents=True, mutate_children=True, can_parents_prevail=True):
         for epoch in range(n_epochs):
             parents_scores = self.score_all(self.population)
-            print(f'Epoch: {epoch}, Max score: {np.max(parents_scores)},\
-                  Mean score: {np.mean(parents_scores)}')
+            print(f'Epoch: {epoch}, Max score: {np.max(parents_scores)}, Mean score: {np.mean(parents_scores)}')
             children_population = self.reproduction_function(self.population)
             population_to_mutate = []
             if mutate_parents:
@@ -68,9 +67,7 @@ class Evolution():
             else: 
                 new_population = mutated_population
                 scores = mutated_scores
-                
-            if np.isnan(scores).any():
-                return new_population, scores
+
             self.population = self.selection_function(new_population, scores, self.populaton_size)
             
             

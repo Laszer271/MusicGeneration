@@ -35,4 +35,4 @@ evolution_model = Evolution(mutations_functions,
                             tonality=tonality.C_MAJOR)
 
 evolution_model.initialize_population(population_kwargs)
-arr, score = evolution_model.start(n_epochs=100)
+evolution_model.start(n_epochs=1000)
