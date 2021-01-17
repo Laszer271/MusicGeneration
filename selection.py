@@ -8,6 +8,7 @@ def roulette_selection(population, scores, size_to_select):
     
     probs = scores / np.sum(scores)
     new_population_indices.extend(np.random.choice(range(len(population)),
-                                           size=size_to_select-1,
-                                           p=probs))
+                                           size=min(size_to_select-1, len(population)),
+                                           p=probs,
+                                           replace=False))
     return list(population[new_population_indices])
