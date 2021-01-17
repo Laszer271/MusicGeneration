@@ -5,10 +5,16 @@ import utils
 
 # statistical features
 def calculate_mean_pitch(gen_vec, _):
-    mean = np.average(gen_vec[gen_vec >= utils.LOWEST_PITCH])
+    notes = gen_vec[gen_vec >= utils.LOWEST_PITCH]
+    if notes.size == 0:
+        return 0.5
+    mean = np.average(notes)
     return mean / utils.HIGHEST_PITCH
 def calculate_pitch_deviation(gen_vec, _):
-    deviation = np.std(gen_vec[gen_vec >= utils.LOWEST_PITCH])
+    notes = gen_vec[gen_vec >= utils.LOWEST_PITCH]
+    if notes.size == 0:
+        return 0
+    deviation = np.std(notes)
     return deviation / utils.HIGHEST_PITCH
 def calculate_off_scale_notes(gen_vec, music_key):
     off_scale_notes_no = np.count_nonzero(np.isin(gen_vec[gen_vec >= utils.LOWEST_PITCH], music_key) == False)
@@ -24,13 +30,13 @@ def get_dissonances(gen_vec):
 '''
 def calculate_minor_and_major_seconds(gen_vec, _):
     intervals = utils.get_intervals(gen_vec)
-    if intervals.size == 0:
+    if np.count_nonzero(intervals) == 0:
         return 0
     seconds_no = np.count_nonzero(np.isin(intervals, np.array([utils.MINOR_SECOND_INTERVAL, utils.MAJOR_SECOND_INTERVAL])))
     return seconds_no / np.count_nonzero(intervals)
 def calculate_intervals_larger_than_octave(gen_vec, _):
     intervals = utils.get_intervals(gen_vec)
-    if intervals.size == 0:
+    if np.count_nonzero(intervals) == 0:
         return 0
     intervals_larger_than_octave_no = np.count_nonzero(intervals > utils.OCTAVE_LENGTH)
     return intervals_larger_than_octave_no / np.count_nonzero(intervals)
