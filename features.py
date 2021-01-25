@@ -64,9 +64,9 @@ def calculate_rests_to_notes_ratio(gen_vec, _):
 # calculation, weight, mean value, standard deviation
 mean_pitch = (calculate_mean_pitch, 1, 0.564, 0.065)
 pitch_deviation = (calculate_pitch_deviation, 1, 0.053, 0.013)
-off_scale_notes = (calculate_off_scale_notes, 1, 0, 0.3)
+off_scale_notes = (calculate_off_scale_notes, 1, 0, 0.05)
 minor_and_major_seconds = (calculate_minor_and_major_seconds, 1, 0.553, 0.078)
-intervals_smaller_than_octave = (calculate_intervals_smaller_than_octave, 1000, 1, 0.1)
+intervals_smaller_than_octave = (calculate_intervals_smaller_than_octave, 1, 1, 0.1)
 mean_rhythmic_value = (calculate_mean_rhythmic_value, 1, 0.282, 0.12)
 rhythm_deviation = (calculate_rhythm_deviation, 1, 0.156, 0.058)
 notes_in_strong_beat = (calculate_notes_in_strong_beat, 1, 0.788, 0.218)
