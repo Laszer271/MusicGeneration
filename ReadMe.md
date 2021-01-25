@@ -5,6 +5,7 @@ In that file you can also modify following parameters:
 
 - population size
 - song size
+- tonality
 - number of epochs
 
 
