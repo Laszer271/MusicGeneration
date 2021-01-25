@@ -1,7 +1,7 @@
 import numpy as np
-import representations
+from evolution.utils import representations
 from midiutil import MIDIFile
-import play_midi
+from evolution.utils import play_midi
 
 def play_music(pitches, durations):
     track    = 0

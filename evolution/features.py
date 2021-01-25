@@ -1,7 +1,7 @@
 import numpy as np
-import representations as rep
-import tonality
-import utils
+from .utils import representations as rep
+from .utils import tonality
+from .utils import utils
 
 # statistical features
 def calculate_mean_pitch(gen_vec, _):
